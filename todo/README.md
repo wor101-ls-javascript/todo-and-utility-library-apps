@@ -1,0 +1,95 @@
+todoApp Implementation Notes:
+
+  - Todo object creation
+    - class constructor accepts two arguments: object with data, and an 'id'
+    - validation
+      - All methods for validation are defined as static methods on the Todo constructor
+      - id's: 
+        - the 'id' argument is a unique number created by the 'todoList'
+      - titles: 
+        - must always be strings. A non-string value will be converted to a string. 
+        - If the value is an empty string or no value is provided, the title will be set to a string representation  of the 'id'.
+      - completed: set as boolean 'false' by default
+      - month: 
+        - must always be a string, and a non-string value will be converted to a string. 
+        - The string must be a representation of an integer between 1-12. 
+        - If not, string integer representation of the current month is returned.
+      - year: 
+        - must always be a string, and a non-string value will be converted to a string. 
+        - The string must have a length of 4 and only contain digits. 
+        - If it does not, a four digit string representing the current year will be returned.
+      - description: 
+        - must always be a string. 
+        - If not a string will check to see if it is a number and convert to string. 
+        - Otherwise it will return an empty string.
+
+  - todoList
+    - Private data and behaviors implemented using an IIFE 
+        - an initialized empty 'todos' array stores the 'todo' objects and is in the returned objects enclosure
+        - 'counter' & 'generateId' function
+          - 'counter' method: returns a function with a private 'count' variable in its enclosure
+          - 'generateId' function: increments the private 'count' variable and returns its to ensure unique IDs
+        - 'restList' function:
+          - resets the 'counter' to 0
+          - resets 'todos' to equal an empty array
+        - 'copyToDo' function: 
+          - creates new object with copies of the properties and values of the original
+          - returns the copied object
+        - 'retrieveTodoById' function:
+          - retrieves an original 'todo' object by ID and returns it. 
+          - Kept private so only methods of 'todoList' can access original 'todos'
+        - 'validId' function:
+          - returns true if the provided argument is an existing 'id' in a 'todo' object in 'todos'. 
+          - Otherwise it returns false.
+        - 'getIndex' function:
+          -  accepts and 'id' as an argument and returns the index of a 'todo' in the 'todo's collection with that id
+          - returns -1 if no match is found
+        - 'validateProperties' function: 
+          - accepts an object and uses the 'Todo' constructor's static methods to validate the values of each property 
+          - if a value is not acceptable it updates the value of the object per the rules of the Todo validation methods
+        - 'validateTodoData' function:
+          - accepts an object that should contain data used to create a 'todo' object
+          - returns true if object has at least one valid property. Otherwise it returns false.
+    - 'get' method: 
+      - accepts an optional 'id' argument 
+      - If no 'id' given, returns an array containing copies of all 'todos' 
+      - If 'id' given, returns a single copy of a 'todo'. Will return false if 'id' is not valid.
+    - 'add' method: 
+      - Confirms argument contains valid 'todo' data
+      - returns a copy of the 'todo' object if succesfully added. Otherwise it returns false.
+    - 'delete' method: 
+      - accepts an 'id' as an argument and removes 'todo' from 'todo's
+      - returns a copy of the 'todo' deleted. If the 'id' was not valid, it returns false.
+    - 'update' method: 
+      - accepts an 'id' and object as arguments. 
+      - if 'id' is valid, it checks and validates the objects properties
+      - validated object properties are then used to update any existing 'todo' properties
+        - the 'id' cannot be updated
+        - any none 'todo' properties cannot be added and will be ignored
+      - if the'todo' was updated, a copy of the updated todo is returned. Otherwise, it returns false.
+    - 'init' method: 
+      - accepts an array of objects containing 'todo' data. 
+      - validates that argument is an array and that every element is valid via 'validateProperties' private function
+        - resets the todoList 'id' counter and sets 'todos' to an empty array 
+        - iterates over array and passes each element to the 'add' method which creates and adds a new 'todo' to the 'todos' object
+      - if argument is not valid null is returned
+
+  - todoManager
+    - uses an IIFE to create a closure to include private behavior
+      - 'validTodoList' method: returns 'true' if the argument is the 'todoList' object or a descendant of it. Otherwise, returns false;
+    - all methods accept a 'todoList' object as their first argument
+      - the private 'validTodoList' method is used to confirm it is valid. If not, null is returned
+    - 'allTodos' method: 
+      - returns array of consisting of copies of all 'todo's
+      - returns empty array if no todos
+    - 'completedTodos' method: 
+      - returns an array consisting of copies of all completed 'todo's
+      - returns an empty array if no matching todos
+    - 'withinMonthYear' method: 
+      - accpets two additional arguments for 'month' and 'year'. 
+      - returns an array consisting of 'todo' objects where the 'month' and 'year' property are equal to the arguments
+      - returns an empty array if no matching todos
+    - 'completedWithinMonthYear' method: 
+      - accpets two additional arguments for 'month' and 'year'. 
+      - returns an array of todo objects where 'completed' is 'true' and the 'month' and 'year' property are equal to the arguments
+      - returns an empty array if no matching todos
